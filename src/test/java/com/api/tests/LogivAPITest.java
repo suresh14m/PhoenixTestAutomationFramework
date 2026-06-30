@@ -6,22 +6,27 @@ import static io.restassured.http.ContentType.*;
 
 import static org.hamcrest.Matchers.*;
 
+import java.io.IOException;
+
 import org.testng.annotations.Test;
 
 import com.api.pojo.UserCredentials;
+
+import static com.api.utils.ConfigManager.*;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.*;
 
 public class LogivAPITest {
 	
 	@Test
-	public void testLogivAPI() {
+	public void testLogivAPI() throws IOException {
 		// Rest Assured code to test Logiv API
+	
 		
 		UserCredentials userCredentials = new UserCredentials("iamfd", "password");
 		
 		given()
-		    .baseUri("http://64.227.160.186:9000/v1")
+		    .baseUri(getProperty("BASE_URI"))
             .and()
             .contentType(JSON)
             .and()
