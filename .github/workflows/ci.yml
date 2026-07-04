@@ -7,6 +7,16 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  schedule: # Set the CRON for MIDNIGHT IST ---- UTC
+    - cron: "30 18 * * *"  
+  workflow_dispatch:
+    inputs: 
+      env:
+        description: "Environment"
+        type: choice
+        options: [qat,uat,dev] 
+        default: qat 
+        required: true
 
 jobs:
   test:
@@ -24,7 +34,7 @@ jobs:
         cache: maven
         
     - name: Execute Test Auromation Frame-work
-      run: mvn clean test -DsuiteXmlFile=testng.xml -Denv=qa
+      run: mvn clean test -DsuiteXmlFile=testng.xml -Denv="${{ github.event.inputs.env }}"
 
     - name: Upload a Build Artifact
       if: always()
