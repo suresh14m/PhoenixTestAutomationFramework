@@ -1,21 +1,19 @@
 package com.api.tests;
-import static io.restassured.RestAssured.*;
-
-import static io.restassured.http.ContentType.*;
-
-import static org.hamcrest.Matchers.*;
+import static com.api.utils.AuthTokenProvider.getToken;
+import static com.api.utils.ConfigManager.getProperty;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.lessThan;
 
 import java.io.IOException;
 
 import org.testng.annotations.Test;
 
-
-
-import static com.api.utils.ConfigManager.*;
+import static com.api.constants.Role.*;
 
 import io.restassured.http.Header;
-
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
 
 
 
@@ -27,7 +25,7 @@ public class UserDeatailsAPITest {
 	public void testUserDetailsAPI() throws IOException {
 		// Rest Assured code to test User Details API
 		
-		Header authHeader = new Header("Authorization","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZmlyc3RfbmFtZSI6ImZkIiwibGFzdF9uYW1lIjoiZmQiLCJsb2dpbl9pZCI6ImlhbWZkIiwibW9iaWxlX251bWJlciI6Ijg4OTk3NzY2NTUiLCJlbWFpbF9pZCI6Im1hcmtAZ21haWwuY29tIiwicGFzc3dvcmQiOiI1ZjRkY2MzYjVhYTc2NWQ2MWQ4MzI3ZGViODgyY2Y5OSIsInJlc2V0X3Bhc3N3b3JkX2RhdGUiOm51bGwsImxvY2tfc3RhdHVzIjowLCJpc19hY3RpdmUiOjEsIm1zdF9yb2xlX2lkIjo1LCJtc3Rfc2VydmljZV9sb2NhdGlvbl9pZCI6MSwiY3JlYXRlZF9hdCI6IjIwMjEtMTEtMDNUMDg6MDY6MjMuMDAwWiIsIm1vZGlmaWVkX2F0IjoiMjAyMS0xMS0wM1QwODowNjoyMy4wMDBaIiwicm9sZV9uYW1lIjoiRnJvbnREZXNrIiwic2VydmljZV9sb2NhdGlvbiI6IlNlcnZpY2UgQ2VudGVyIEEiLCJpYXQiOjE3ODI2NDIyNTR9.bV8e_aQ_8caCCOwELkLRYh-Kx030snVoHaeTkO7TCrY");
+		Header authHeader = new Header("Authorization",getToken(SUP));
 		given()
 			.baseUri(getProperty("BASE_URI"))
 			.and()
