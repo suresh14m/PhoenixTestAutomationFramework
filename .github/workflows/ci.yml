@@ -45,6 +45,7 @@ jobs:
     - name: Execute Test Auromation Frame-work
       run: mvn clean test -DsuiteXmlFile="${{ github.event.inputs.suiteXmlFile }}" -Denv="${{ github.event.inputs.env }}"
 
+
     - name: Upload a Build Artifact
       if: always()
       uses: actions/upload-artifact@v7.0.1
