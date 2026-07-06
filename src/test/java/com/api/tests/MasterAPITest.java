@@ -9,21 +9,21 @@ import static io.restassured.module.jsv.JsonSchemaValidator.*;
 
 import org.testng.annotations.Test;
 
+import com.api.utils.SpecUtil;
+
 public class MasterAPITest {
 	
 	@Test
 	public void testMasterAPI() {
 		// Implement your test logic here
 		given()
-		.baseUri(getProperty("BASE_URI"))
-		.header("Authorization",getToken(FD))
-		.contentType("")
-		.log().all()
+		.spec(SpecUtil.requestSpecWithAuth(FD))		
 		.when()
 		.post("/master")
-		.then().log().all().statusCode(200)
+		.then()
+		.spec(SpecUtil.responseSpec_ok())
 		.and()
-		.time(lessThan(1000L))
+		
 		.body("message", equalTo("Success"))
 		.body("data", notNullValue())
 		.body("data", hasKey("mst_warrenty_status"))
@@ -39,8 +39,8 @@ public class MasterAPITest {
 	
 	@Test	
 	public void testMasterAPIWithInvalidToken() {
-		given().baseUri(getProperty("BASE_URI")).header("Authorization", "").contentType("").log().all()
-				.when().post("/master").then().log().all().statusCode(401).and().time(lessThan(1000L));
+		given().spec(SpecUtil.requestSpec())// request without auth token
+				.when().post("/master").then().spec(SpecUtil.responseSpec_text(401));
 				
 
 	}
