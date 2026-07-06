@@ -1,58 +1,41 @@
 package com.api.tests;
 
+import static com.api.constants.Role.FD;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.blankOrNullString;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+
 import org.testng.annotations.Test;
 
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
-
-import static com.api.constants.Role.*;
-
-import static com.api.utils.AuthTokenProvider.*;
-
-import static io.restassured.RestAssured.*;
-import static com.api.utils.ConfigManager.*;
-import static org.hamcrest.Matchers.*;
+import com.api.utils.SpecUtil;
 
 public class CountAPITest {
-	
+
 	@Test
 	public void verifyCountAPIResponse() {
 		// Implement test logic for Count API
-		given()
-            .baseUri(getProperty("BASE_URI")) //helper method to get the base URI from configuration
-            .and()
-            .header("Authorization",getToken(FD)) // Assuming you have a method to get the token)
-            .log().uri()
-            .log().method()
-            .log().headers()
-            .and()
-            .when()
-            .get("/dashboard/count")
-            .then() 
-            .log().all()
-            .statusCode(200)
-            .and()
-            .body("message", equalTo("Success"))
-            .time(lessThan(1000L))
-            .body("data", notNullValue())
-		    .body("data.size()", equalTo(3))
-		    .body("data.count", everyItem(greaterThanOrEqualTo(0)))
-			.body("data.label",everyItem(not(blankOrNullString())))
-			.body("data.key", containsInAnyOrder("pending_for_delivery", "created_today", "pending_fst_assignment"))
-            .body(matchesJsonSchemaInClasspath("response-schema/CountAPIResponseSchema.json"));
+		given().spec(SpecUtil.requestSpecWithAuth(FD)) // helper method to get the request specification with auth token
+				.when().get("/dashboard/count").then().spec(SpecUtil.responseSpec_ok()) // helper method to get the
+																						// response specification
+				.and().body("message", equalTo("Success")).body("data", notNullValue()).body("data.size()", equalTo(3))
+				.body("data.count", everyItem(greaterThanOrEqualTo(0)))
+				.body("data.label", everyItem(not(blankOrNullString())))
+				.body("data.key", containsInAnyOrder("pending_for_delivery", "created_today", "pending_fst_assignment"))
+				.body(matchesJsonSchemaInClasspath("response-schema/CountAPIResponseSchema.json"));
 	}
-	
-	
-	
+
 	@Test
 	public void verifyCountAPIResponseWithoutAuthToken() {
 		// Implement test logic for Count API without auth token
-		given().baseUri(getProperty("BASE_URI")) // helper method to get the base URI from configuration
-				.and().log().uri()
-	            .log().method()
-	            .log().headers()
-	            .when().get("/dashboard/count")
-	            .then().log().all()
-	            .statusCode(401).and()
-				.time(lessThan(1000L));
+		given().spec(SpecUtil.requestSpec()) // helper method to get the request specification without auth token
+				.when().get("/dashboard/count")
+				.then()
+				.spec(SpecUtil.responseSpec_text(401));// helper method to get the response specification for 401
 	}
 }

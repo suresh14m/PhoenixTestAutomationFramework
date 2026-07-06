@@ -1,11 +1,10 @@
 package com.api.tests;
 
-import static com.api.utils.ConfigManager.getProperty;
+import static com.api.utils.SpecUtil.requestSpec;
+import static com.api.utils.SpecUtil.*;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.lessThan;
 
 import java.io.IOException;
 
@@ -34,16 +33,8 @@ public class LogivAPITest {
         System.out.println("=========================================");
 
         Response response = given()
-                .baseUri(getProperty("BASE_URI"))
-                .contentType(JSON)
-                .accept(JSON)
-                .body(userCredentials)
-                .log().uri()
-                .log().method()
-                .log().headers()
-                .log().body()
-
-        .when()
+                .spec(requestSpec(userCredentials))               
+                .when()
                 .post("/login");
 
         // Print response
@@ -55,8 +46,7 @@ public class LogivAPITest {
 
         // Validate response
         response.then()
-                .statusCode(200)
-                .time(lessThan(5000L))
+                .spec(responseSpec_ok())
                 .body("message", equalTo("Success"));
 
         // Validate JSON Schema
